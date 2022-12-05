@@ -389,18 +389,20 @@ class Cube2map:
         if not (isinstance(cr, list) or isinstance(cr, tuple)):
             raise TypeError("'cr' (channel range) is not a list or tuple.")
         self._m0 = np.sum(self.y[cr[0]:cr[1]]*self.cw, axis=0)
+        
+        dch = np.nansum(self.mask, axis=(1, 2))###
+        rms_dch = np.nanmedian(dch[self._rmsch])
+        nch = np.sum(dch[cr[0]:cr[1]] > self._snr*rms_dch)
+        if self._smoothing:
+            mrms = np.nanmedian(self.srms*self.detmask)
+        else:
+            mrms = np.nanmedian(self.rms*self.detmask)
+        self._m0rms = np.sqrt(nch)*mrms*self.cw###
+        
         if masking:
             self._m0 *= self.detmask
             self._m0[self._m0 == 0.] = np.nan
-        if verbose:
-            dch = np.nansum(self.mask, axis=(1, 2))
-            rms_dch = np.nanmedian(dch[self._rmsch])
-            nch = np.sum(dch[cr[0]:cr[1]] > self._snr*rms_dch)
-            if self._smoothing:
-                mrms = np.nanmedian(self.srms*self.detmask)
-            else:
-                mrms = np.nanmedian(self.rms*self.detmask)
-            self._m0rms = np.sqrt(nch)*mrms*self.cw
+        if verbose:            
             print('\n[ Making Moment 0 (integrated intensity) map ]')
             print('Channel range      = {:d} ~ {:d}'.format(cr[0], cr[1]))
             print('Velocity range     = {:.2f} ~ {:.2f}'.format(self.x[cr[0]], self.x[cr[1]]))
@@ -411,7 +413,7 @@ class Cube2map:
             print('-----\nRMS_moment0        = {:.3f} K km/s'.format(self._m0rms))
             return self._m0, self._m0rms
         else:
-            return self._m0
+            return self._m0, self._m0rms
 
     def moment1(self, vr=None, cr=None):
         """
