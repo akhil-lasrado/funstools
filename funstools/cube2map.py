@@ -411,9 +411,9 @@ class Cube2map:
             print('Smoothing          = {}'.format(self._smoothing))
             print('Median RMS_line    = {:.3f} K'.format(mrms))
             print('-----\nRMS_moment0        = {:.3f} K km/s'.format(self._m0rms))
-            return self._m0, self._m0rms
+            return self._m0#, self._m0rms
         else:
-            return self._m0, self._m0rms
+            return self._m0#, self._m0rms
 
     def moment1(self, vr=None, cr=None):
         """
@@ -630,4 +630,3 @@ class Cube2map:
 
         lsfig.canvas.mpl_connect('button_press_event', _onclick)
         return lsfig, lsmap, lslin
-
