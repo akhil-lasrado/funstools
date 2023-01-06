@@ -243,12 +243,14 @@ def wcs2d(hdu):
     Returns:
         wcs.WCS (with 2 axis)
     """
-    if isinstance(hdu, fits.Header):
-        temp = np.zeros(tuple(hdu['NAXIS'+str(i+1)] for i in range(hdu['NAXIS'])))
-        hdu = fits.PrimaryHDU(temp, hdu)
-    temp = check_axis(hdu, 2)
-    return WCS(get_fits(temp, 'header'))
-
+# =============================================================================
+#     if isinstance(hdu, fits.Header):
+#         temp = np.zeros(tuple(hdu['NAXIS'+str(i+1)] for i in range(hdu['NAXIS'])))
+#         hdu = fits.PrimaryHDU(temp, hdu)
+#     temp = check_axis(hdu, 2)
+#     return WCS(get_fits(temp, 'header'))
+# =============================================================================
+    return WCS(hdu.header).celestial
 
 def header2d(hdu):
     """
@@ -265,4 +267,3 @@ def header2d(hdu):
         hdu = fits.PrimaryHDU(temp, hdu)
     temp = check_axis(hdu, 2)
     return get_fits(temp, 'header')
-
