@@ -24,6 +24,7 @@ from .smooth import *
 from .userinput import *
 from .decompose import *
 from .parameter import *
+from .fof import *
 
 _debye = [(u.D, u.g**0.5*u.cm**2.5/u.s, lambda x:1e-18*x, lambda x:1e18*x),
           (u.statC, u.g**0.5*u.cm**1.5/u.s, lambda x:1e-18*x, lambda x:1e18*x)]
