@@ -8,7 +8,7 @@ Created on Mon Jan  2 18:55:43 2023
 
 import numpy as np
 import matplotlib.pyplot as plt
-from astropy.io import fits
+#from astropy.io import fits
 from astropy.wcs import WCS
 import warnings
 from console_progressbar import ProgressBar
@@ -93,8 +93,8 @@ def fof(df,verbose=False,plot=False,snr=3.0,hdu=None,min_size=4,dist_mult=1,iter
     
     return groups, gdf
 
-def get_group_size(df, group=None):
-    if type(group) == int:
+def get_group_size(df, group):
+    if isinstance(group, (int, np.integer)):
         unique_coords = df[df['gn']==group][['rp','dp']].drop_duplicates().values
     elif type(group) == list:
         unique_coords = df.loc[group][['rp','dp']].drop_duplicates().values
@@ -106,7 +106,7 @@ def get_group_size(df, group=None):
 
 def get_group_mask(df,group,hdu):
     mask = np.zeros(hdu.data.shape)
-    coords = get_group_size(df,group)[1]
+    coords = get_group_size(df=df,group=group)[1]
     mask[coords[:,1],coords[:,0]]=1
     
     return mask
