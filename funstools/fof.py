@@ -8,7 +8,6 @@ Created on Mon Jan  2 18:55:43 2023
 
 import numpy as np
 import matplotlib.pyplot as plt
-#from astropy.io import fits
 from astropy.wcs import WCS
 import warnings
 from console_progressbar import ProgressBar
@@ -151,24 +150,17 @@ def endfinder(array):
     
     (rows,cols) = np.nonzero(array)
 
-    # Initialize empty list of co-ordinates
     end_points = []
-    
-    # For each non-zero pixel...
+
     for (r,c) in zip(rows,cols):
-    
-        # Extract an 8-connected neighbourhood
+
         (col_neigh,row_neigh) = np.meshgrid(np.array([c-1,c,c+1]), np.array([r-1,r,r+1]))
-    
-        # Cast to int to index into image
+
         col_neigh = col_neigh.astype('int')
         row_neigh = row_neigh.astype('int')
-    
-        # Convert into a single 1D array and check for non-zero locations
+
         pix_neighbourhood = array[row_neigh,col_neigh].ravel() != 0
-    
-        # If the number of non-zero locations equals 2, add this to 
-        # our list of co-ordinates
+
         if np.sum(pix_neighbourhood) == 2:
             end_points.append((r,c))
 
