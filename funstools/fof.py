@@ -110,3 +110,66 @@ def get_group_mask(df,group,hdu):
     mask[coords[:,1],coords[:,0]]=1
     
     return mask
+
+def pathfinder(array,start_coord):
+    path = [start_coord]
+    k=1
+    if array[start_coord[0],start_coord[1]] != 1:
+        raise ValueError('Starting coordinate does not belong to skeleton.')
+    while k > 0:
+        neighbors = [[start_coord[0]+1,start_coord[1]],[start_coord[0],start_coord[1]+1],
+                     [start_coord[0]-1,start_coord[1]],[start_coord[0],start_coord[1]-1]]
+        neighbors = [c for c in neighbors if c not in path]
+        check = [array[c[0],c[1]] for c in neighbors]
+        if sum(check) == 1:
+            new_coord = neighbors[np.argmax(check)]
+            if new_coord not in path:
+                path.append(new_coord)
+                start_coord = new_coord
+        elif sum(check) > 1:
+            raise ValueError('Path contains branches, or starting point is not an end point.')
+        else:
+            neighbors = [[start_coord[0]+1,start_coord[1]+1],[start_coord[0]+1,start_coord[1]-1],
+                         [start_coord[0]-1,start_coord[1]+1],[start_coord[0]-1,start_coord[1]-1]]
+            neighbors = [c for c in neighbors if c not in path]
+            check = [array[c[0],c[1]] for c in neighbors]
+            if sum(check) == 1:
+                new_coord = neighbors[np.argmax(check)]
+                if new_coord not in path:
+                    path.append(new_coord)
+                    start_coord = new_coord
+                else:
+                    k=0
+            elif sum(check) > 1:
+                raise ValueError('Path contains branches, or starting point is not an end point.')
+            else:
+                k=0
+    return path
+
+def endfinder(array):
+    # From https://stackoverflow.com/questions/26537313/how-can-i-find-endpoints-of-binary-skeleton-image-in-opencv
+    
+    (rows,cols) = np.nonzero(array)
+
+    # Initialize empty list of co-ordinates
+    end_points = []
+    
+    # For each non-zero pixel...
+    for (r,c) in zip(rows,cols):
+    
+        # Extract an 8-connected neighbourhood
+        (col_neigh,row_neigh) = np.meshgrid(np.array([c-1,c,c+1]), np.array([r-1,r,r+1]))
+    
+        # Cast to int to index into image
+        col_neigh = col_neigh.astype('int')
+        row_neigh = row_neigh.astype('int')
+    
+        # Convert into a single 1D array and check for non-zero locations
+        pix_neighbourhood = array[row_neigh,col_neigh].ravel() != 0
+    
+        # If the number of non-zero locations equals 2, add this to 
+        # our list of co-ordinates
+        if np.sum(pix_neighbourhood) == 2:
+            end_points.append((r,c))
+
+    return end_points
